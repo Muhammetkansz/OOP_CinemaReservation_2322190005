@@ -1,15 +1,14 @@
-from SeatStatus import SeatStatus
-from SeatStatus import SeatType
+from .SeatStatus import SeatStatus, SeatType
+
 class Seat:
-    def __init__(self,Rowletter,Columnnumber,SeatType):
-        self.RowNumber = Rowletter
-        self.columnletter = Columnnumber
-        self.ID = f"{self.Rowletter}{self.Columnnumber}"
+    def __init__(self, RowNumber, ColumnNumber, SeatType=SeatType.STANDARD):
+        self.RowNumber = RowNumber
+        self.ColumnNumber = ColumnNumber
         self.SeatType = SeatType
         self.status = SeatStatus.AVAIBLE
 
-    def StatusChange(self):
-    pass
+    def StatusChange(self, new_status):
+        self.status = new_status
 
-    def TypeChange(self):
-    pass
+    def TypeChange(self, new_type):
+        self.SeatType = new_type
