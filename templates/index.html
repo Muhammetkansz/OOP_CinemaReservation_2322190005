@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sinema Rezervasyon Sistemi</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; }
+        .movie-card { background: white; padding: 20px; margin: 10px; display: inline-block; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); width: 200px; }
+        button { background: #e74c3c; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🎬 Vizyondaki Filmler</h1>
+    <div id="movie-list">
+        {% for movie in movies %}
+        <div class="movie-card">
+            <h2>{{ movie.title }}</h2>
+            <p>Tür: {{ movie.genre }}</p>
+            <button>Bilet Al</button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
