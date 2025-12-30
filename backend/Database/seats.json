@@ -1,0 +1,7 @@
+[
+    {"id": 1, "movieId": 1, "number": "A1", "isOccupied": false},
+    {"id": 2, "movieId": 1, "number": "A2", "isOccupied": true},
+    {"id": 3, "movieId": 1, "number": "A3", "isOccupied": false},
+    {"id": 4, "movieId": 1, "number": "A4", "isOccupied": false},
+    {"id": 5, "movieId": 1, "number": "A5", "isOccupied": false}
+]
