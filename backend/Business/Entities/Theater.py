@@ -1,3 +1,5 @@
+from backend.Business.Entities.SeatStatus import SeatStatus
+from backend.Business.Entities.Seat import Seat
 from .SeatStatus import SeatStatus, SeatType
 from .Seat import Seat
 

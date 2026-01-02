@@ -6,30 +6,75 @@
         body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(5, 50px); 
-            gap: 10px; 
+            grid-template-columns: repeat(10, 50px); 
+            gap: 8px; 
             justify-content: center; 
             margin-top: 20px;
         }
         .seat { 
             width: 50px; height: 50px; border-radius: 5px; 
             display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: white;
+            font-weight: bold; color: white; cursor: pointer;
         }
-        .available { background-color: #2ecc71; cursor: pointer; }
+        .available { background-color: #2ecc71; }
+        .vip { background-color: #f1c40f; color: black; border: 2px solid #d4af37; }
         .occupied { background-color: #e74c3c; cursor: not-allowed; }
+        .selected { background-color: blue !important; color: white !important; }
     </style>
 </head>
 <body>
-    <h1>Koltuk Düzeni</h1>
+    <h1>💺 Koltuk Düzeni</h1>
     <div class="grid">
         {% for seat in seats %}
-            <div class="seat {{ 'occupied' if seat.isOccupied else 'available' }}">
+            <div class="seat {{ 'occupied' if seat.isOccupied else ('vip' if seat.isVIP else 'available') }}">
                 {{ seat.number }}
             </div>
         {% endfor %}
     </div>
+
     <br>
+    <button id="buy-button" style="padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+        Seçili Koltukları Onayla ve Satın Al
+    </button>
+
+    <br><br>
     <a href="/"><button style="padding: 10px; cursor: pointer;">Geri Dön</button></a>
+
+    <script>
+        let selectedSeats = [];
+
+        document.querySelectorAll('.seat').forEach(seat => {
+            seat.addEventListener('click', function() {
+                if (this.classList.contains('occupied')) return;
+                const seatNumber = this.innerText.trim();
+                this.classList.toggle('selected');
+                if (this.classList.contains('selected')) {
+                    selectedSeats.push(seatNumber);
+                } else {
+                    selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+                }
+            });
+        });
+
+        document.getElementById('buy-button').addEventListener('click', function() {
+            if (selectedSeats.length === 0) {
+                alert("Lütfen koltuk seçin!");
+                return;
+            }
+            fetch('/calculate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ seats: selectedSeats })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const confirmBuy = confirm("Koltuklar: " + selectedSeats.join(", ") + "\nToplam: " + data.total_price + " TL\nOnaylıyor musunuz?");
+                if (confirmBuy) {
+                    alert("Satın alındı!");
+                    window.location.href = "/";
+                }
+            });
+        });
+    </script>
 </body>
 </html>
