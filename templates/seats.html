@@ -1,44 +1,58 @@
+<!DOCTYPÖdevdeki tüm maddeleri (İptal, Öneri, VIP/Standart ayrımı ve Benzer Filmler) içeren seats.html dosyasının en güncel ve temiz hali aşağıdadır:
+
+HTML
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Koltuk Seçimi</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f4f4f4; }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(10, 50px); 
-            gap: 8px; 
-            justify-content: center; 
-            margin-top: 20px;
-        }
-        .seat { 
-            width: 50px; height: 50px; border-radius: 5px; 
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: white; cursor: pointer;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 10px; justify-content: center; margin: 30px 0; }
+        .seat { width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; color: white; cursor: pointer; transition: 0.3s; }
         .available { background-color: #2ecc71; }
         .vip { background-color: #f1c40f; color: black; border: 2px solid #d4af37; }
         .occupied { background-color: #e74c3c; cursor: not-allowed; }
-        .selected { background-color: blue !important; color: white !important; }
+        .selected { background-color: #3498db !important; color: white !important; transform: scale(1.1); }
+        .screen { background: #34495e; color: white; padding: 10px; margin-bottom: 20px; border-radius: 5px; font-size: 14px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+        button { border: none; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        #suggest-button { padding: 10px 20px; background: #3498db; color: white; }
+        #buy-button { padding: 15px 30px; background: #27ae60; color: white; font-size: 16px; }
+        #cancel-button { padding: 10px 20px; background: #95a5a6; color: white; }
+        .recommendations { margin-top: 40px; border-top: 2px solid #eee; padding-top: 20px; }
+        .rec-item { display: inline-block; background: #ecf0f1; padding: 10px 20px; margin: 5px; border-radius: 20px; font-size: 14px; }
     </style>
 </head>
 <body>
-    <h1>💺 Koltuk Düzeni</h1>
-    <div class="grid">
-        {% for seat in seats %}
-            <div class="seat {{ 'occupied' if seat.isOccupied else ('vip' if seat.isVIP else 'available') }}">
-                {{ seat.number }}
-            </div>
-        {% endfor %}
+    <div class="container">
+        <h1>{{ theater_name }} - Koltuk Düzeni</h1>
+        <div class="screen">PERDE / SAHNE</div>
+        
+        <div class="grid">
+            {% for seat in seats %}
+                <div class="seat {{ 'occupied' if seat.isOccupied else ('vip' if seat.isVIP else 'available') }}" 
+                     data-id="{{ seat.number }}">
+                    {{ seat.number }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="btn-group">
+            <button id="suggest-button">✨ En İyi Koltukları Öner (Stage 3)</button>
+            <button id="buy-button">Seçili Koltukları Onayla ve Satın Al (Stage 2)</button>
+            <button id="cancel-button">Bilet İptal Et (Stage 2)</button>
+            <a href="/"><button style="background: none; color: #7f8c8d; text-decoration: underline;">Geri Dön</button></a>
+        </div>
+
+        <div class="recommendations">
+            <h3>🎬 Bu Filmi Sevenler Bunları da Sevdi (Stage 3)</h3>
+            {% for rec in recommendations %}
+                <span class="rec-item">{{ rec.title }} ({{ rec.genre }})</span>
+            {% endfor %}
+        </div>
     </div>
-
-    <br>
-    <button id="buy-button" style="padding: 15px 30px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
-        Seçili Koltukları Onayla ve Satın Al
-    </button>
-
-    <br><br>
-    <a href="/"><button style="padding: 10px; cursor: pointer;">Geri Dön</button></a>
 
     <script>
         let selectedSeats = [];
@@ -46,21 +60,38 @@
         document.querySelectorAll('.seat').forEach(seat => {
             seat.addEventListener('click', function() {
                 if (this.classList.contains('occupied')) return;
-                const seatNumber = this.innerText.trim();
+                
+                const seatId = this.getAttribute('data-id');
                 this.classList.toggle('selected');
+                
                 if (this.classList.contains('selected')) {
-                    selectedSeats.push(seatNumber);
+                    selectedSeats.push(seatId);
                 } else {
-                    selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+                    selectedSeats = selectedSeats.filter(id => id !== seatId);
                 }
             });
         });
 
+        document.getElementById('suggest-button').addEventListener('click', function() {
+            fetch('/suggest_best', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                data.suggested.forEach(sId => {
+                    const seatEl = document.querySelector(`[data-id="${sId}"]`);
+                    if (seatEl && !seatEl.classList.contains('occupied')) {
+                        if (!seatEl.classList.contains('selected')) {
+                            seatEl.classList.add('selected');
+                            selectedSeats.push(sId);
+                        }
+                    }
+                });
+                alert("Algoritma merkeze en yakın boş koltukları seçti.");
+            });
+        });
+
         document.getElementById('buy-button').addEventListener('click', function() {
-            if (selectedSeats.length === 0) {
-                alert("Lütfen koltuk seçin!");
-                return;
-            }
+            if (selectedSeats.length === 0) return alert("Lütfen en az bir koltuk seçin!");
+            
             fetch('/calculate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -68,12 +99,27 @@
             })
             .then(response => response.json())
             .then(data => {
-                const confirmBuy = confirm("Koltuklar: " + selectedSeats.join(", ") + "\nToplam: " + data.total_price + " TL\nOnaylıyor musunuz?");
-                if (confirmBuy) {
-                    alert("Satın alındı!");
+                if (confirm("Seçilen Koltuklar: " + selectedSeats.join(", ") + "\nToplam Tutar: " + data.total_price + " TL\nOnaylıyor musunuz?")) {
+                    alert("Ödeme başarılı! Biletleriniz tanımlandı.");
                     window.location.href = "/";
                 }
             });
+        });
+
+        document.getElementById('cancel-button').addEventListener('click', function() {
+            const seatToCancel = prompt("İptal etmek istediğiniz koltuk numarasını girin (Örn: C4):");
+            if (seatToCancel) {
+                fetch('/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seat_id: seatToCancel })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(seatToCancel + " numaralı bilet iptal edildi ve ücret iadesi başlatıldı.");
+                    window.location.reload();
+                });
+            }
         });
     </script>
 </body>

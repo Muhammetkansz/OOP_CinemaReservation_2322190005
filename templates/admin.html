@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Yönetim Paneli</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; padding: 40px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #3498db; color: white; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #34495e; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Sinema Yönetim ve Analiz Paneli</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card"><h3>Toplam Gelir</h3><p>2000 TL</p></div>
+            <div class="stat-card"><h3>Aktif Salonlar</h3><p>4</p></div>
+            <div class="stat-card"><h3>Satılan Bilet</h3><p>32</p></div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Film Adı</th>
+                    <th>Salon</th>
+                    <th>Tür</th>
+                    <th>Toplam Gelir</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in revenue_data %}
+                <tr>
+                    <td>{{ item.title }}</td>
+                    <td>Salon {{ loop.index }}</td>
+                    <td>Genel</td>
+                    <td><strong>{{ item.revenue }} TL</strong></td>
+                    <td><button style="color: red; cursor: pointer;">Seansı Kapat</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <br>
+        <a href="/" style="display: inline-block; margin-top: 20px; text-decoration: none; color: #3498db;">← Ana Sayfaya Dön</a>
+    </div>
+</body>
+</html>
