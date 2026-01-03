@@ -1,6 +1,18 @@
+# Python geçici dosyaları
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Sanal ortam (Virtual Environment)
 venv/
+.venv/
 env/
-libs/
+
+# IDE ayarları
 .vscode/
+.idea/
+
+# Veritabanı ve loglar
+*.log
+instance/
+.env
